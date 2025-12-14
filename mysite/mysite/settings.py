@@ -9,11 +9,29 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
+
+print("DEBUG DB USER:", os.getenv("DEFAULT_DATABASE_USER"))
+print("DEBUG DB NAME:", os.getenv("DEFAULT_DATABASE_NAME"))
+print(BASE_DIR)
+
+env_path = BASE_DIR / '.env'
+print("BASE_DIR:", BASE_DIR)
+print("ENV PATH:", env_path)
+print("ENV EXISTS:", env_path.exists())
+
+if env_path.exists():
+    with open(env_path) as f:
+        print("ENV RAW CONTENT:", repr(f.read()))
+
+print("DEBUG DB USER:", os.getenv('DEFAULT_DATABASE_USER'))
+print("DEBUG DB NAME:", os.getenv('DEFAULT_DATABASE_NAME'))
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -75,9 +93,25 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DEFAULT_DATABASE_NAME'),
+        'USER': os.getenv('DEFAULT_DATABASE_USER'),
+        'PASSWORD': os.getenv('DEFAULT_DATABASE_PASSWORD'),
+        'HOST': os.getenv('DEFAULT_DATABASE_HOST'),
+        'PORT': os.getenv('DEFAULT_DATABASE_PORT'),
+        #-----------------------------------------------------
+        'AUTOCOMMIT': True,  # Critical setting
+        'ATOMIC_REQUESTS': False,
+        'CONN_HEALTH_CHECKS': False,
+        'CONN_MAX_AGE': 0,
+        'OPTIONS': {},
+        'TEST': {
+            'NAME': None,
+        },
+        # 'OPTIONS': {
+        #     'options': '-c search_path=dbo'
+        # },
+    },
 }
 
 
